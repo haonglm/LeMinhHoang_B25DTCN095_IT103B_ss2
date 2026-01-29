@@ -8,41 +8,55 @@ let overdueDay = +prompt("Nhập số ngày quá hạn trả sách của bạn (
 
 /* xử lý */
 
+let roleMessage;
+
 switch (role) {
     case "admin":
-        console.log("Chào Admin, bạn có toàn quyền hệ thống");
+        roleMessage = "Chào Admin, bạn có toàn quyền hệ thống";
         break;
     case "student":
-        console.log("Chào sinh viên, bạn có thể mượn sách");
+        roleMessage = "Chào sinh viên, bạn có thể mượn sách";
         break;
     case "guest":
-        console.log("Chào khách, bạn chỉ có thể đọc tại chỗ");
+        roleMessage = "Chào khách, bạn chỉ có thể đọc tại chỗ";
         break;
     default:
-        console.log("Lỗi: Vai trò không hợp lệ!");
+        roleMessage = "Lỗi: Vai trò không hợp lệ!";
         break;
 }
 
-if((userName != "" ) && (role == "admin" || role == "student") && (accountBalance > 0 && accountStatus == "true")) {
-    console.log("ĐƯỢC PHÉP MƯỢN SÁCH");
-}else {
-    console.log("YÊU CẦU BỊ TỪ CHỐI");
-    console.log("Lý do:");
+let Allowed = (userName != "") && (role == "admin" || role == "student") && (accountBalance > 0 && accountStatus == "true");
+let borrowResult = Allowed ? "ĐƯỢC PHÉP MƯỢN SÁCH" : "YÊU CẦU BỊ TỪ CHỐI";
 
-    if (userName === "") {
-        console.log("Chưa nhập tên người dùng");
-    }
+let fine = 0;
+let returnStatus;
+let warning;
 
-    if (role !== "admin" && role !== "student") {
-        console.log("Vai trò không được phép mượn sách");
-    }
-
-    if (accountBalance <= 0) {
-        console.log("Số dư tài khoản không hợp lệ");
-    }
-
-    if (accountStatus !== "true") {
-        console.log("Tài khoản đang bị khóa hoặc chưa kích hoạt");
-    }
+if (overdueDay <= 0) {
+    returnStatus = "Cảm ơn bạn đã trả đúng hạn";
+} else if (overdueDay >= 1 && overdueDay <= 5) {
+    fine = overdueDay * 5000;
+    returnStatus = `Quá hạn ${overdueDay} ngày`;
+} else if (overdueDay >= 6 && overdueDay <= 10) {
+    fine = overdueDay * 10000;
+    returnStatus = `Quá hạn ${overdueDay} ngày`;
+} else {
+    fine = 200000;
+    returnStatus = `Quá hạn ${overdueDay} ngày`;
+    warning = "TÀI KHOẢN BỊ KHÓA";
 }
 
+console.log(`
+--- HỆ THỐNG MƯỢN TRẢ ---
+
+Người dùng: ${userName.toUpperCase()}
+
+Quyền hạn: ${roleMessage}
+
+Kết quả mượn: ${borrowResult}
+
+Tình trạng trả sách: ${returnStatus}
+
+Tiền phạt: ${fine} VNĐ
+${warning}
+`);
